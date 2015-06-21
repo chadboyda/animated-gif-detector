@@ -1,4 +1,4 @@
-var Writable = require('stream').Writable
+var PassThrough = require('stream').PassThrough
   , inherits = require('inherits')
   // GIF CONSTANTS. source => http://www.onicos.com/staff/iz/formats/gif.html
   , BLOCK_TERMINATOR = { value: new Buffer('00') }
@@ -19,9 +19,9 @@ var Writable = require('stream').Writable
     }
 ;
 
-inherits(AnimatedGifDetector, Writable);
+inherits(AnimatedGifDetector, PassThrough);
 function AnimatedGifDetector(buffer, options) {
-  Writable.call(this, options);
+  PassThrough.call(this, options);
   this.buffer = new Buffer(0);
   this.isGIF = false;
 }
@@ -46,6 +46,7 @@ AnimatedGifDetector.prototype.isAnimated = function(buffer) {
 }
 
 AnimatedGifDetector.prototype._write = function(chunk, enc, next) {
+  this.push(chunk);
   this.buffer = Buffer.concat([this.buffer, chunk])
     , animated = this.isAnimated(this.buffer)
   ;
